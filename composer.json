@@ -1,0 +1,30 @@
+{
+    "name": "pan/doc-gpt",
+    "description": "PHP library that for document GPT",
+    "type": "library",
+    "require": {
+        "openai-php/client": "^0.8.1",
+        "ankane/pgvector": "^0.1.3",
+        "symfony/http-client": "^7.0",
+        "nyholm/psr7": "^1.8"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Pan\\DocGpt\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Banglanfeng Pan",
+            "email": "panbanglanfeng@gmail.com"
+        }
+    ],
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    }
+}
