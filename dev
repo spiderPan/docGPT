@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 shopt -s expand_aliases
 alias docker-compose='docker compose'
-CONTAINER_DIR=/var/www/html/wp-content/plugins/paramedic-ai
+CONTAINER_DIR=/var/www/html/
 
 SCRIPT_RELATIVE_DIR=$(dirname "${BASH_SOURCE[0]}")
 cd $SCRIPT_RELATIVE_DIR
@@ -41,9 +41,8 @@ function lint() {
 }
 
 function test() {
-  docker-compose run --rm composer install --dev
   if (($# == 0)); then
-    docker-compose --profile test exec -w $CONTAINER_DIR php vendor/bin/phpunit --test-suffix Tests.php ./controllers
+    docker-compose exec -w $CONTAINER_DIR php vendor/bin/phpunit --test-suffix Tests.php ./src
   else
     for file in "$@"; do
       test_one "$file"

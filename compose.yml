@@ -11,6 +11,8 @@ services:
     ports:
       - "8060:8080"
     restart: always
+    working_dir: /var/www/html
+    command: bash -c "composer install && php -S 0.0.0.0:8080"
 
   pgvector:
     image: ankane/pgvector
