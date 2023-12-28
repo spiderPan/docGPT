@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "Paramedic": {
+      "Name": "docGPT",
+      "Group": "Servers",
+      "Port": 5432,
+      "Username": "docGPT",
+      "Host": "pgvector",
+      "SSLMode": "prefer",
+      "MaintenanceDB": "postgres"
+    }
+  }
+}

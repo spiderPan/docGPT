@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+shopt -s expand_aliases
+alias docker-compose='docker compose'
+CONTAINER_DIR=/var/www/html/wp-content/plugins/paramedic-ai
+
+SCRIPT_RELATIVE_DIR=$(dirname "${BASH_SOURCE[0]}")
+cd $SCRIPT_RELATIVE_DIR
+#export DOCKER_DEFAULT_PLATFORM=linux/amd64
+
+function start() {
+  shift
+  if [ "$#" -gt 0 ]; then
+    profiles=""
+    for profile in "$@"; do
+      profiles+="--profile $profile "
+    done
+    docker-compose $profiles up
+  else
+    docker-compose up
+  fi
+}
+
+function stop() {
+  docker-compose down
+}
+
+function wipe() {
+  rm -rf "$SCRIPT_RELATIVE_DIR/.wp/"
+  docker-compose down -v --remove-orphans
+}
+
+function lint() {
+  docker-compose run --rm composer install --dev
+  docker-compose exec -w $CONTAINER_DIR php vendor/bin/phpcs \
+    --ignore=./vendor/* \
+    --standard=PHPCompatibilityWP \
+    --severity=1 \
+    --extensions=php \
+    --runtime-set testVersion 8.2- \
+    -p .
+}
+
+function test() {
+  docker-compose run --rm composer install --dev
+  if (($# == 0)); then
+    docker-compose --profile test exec -w $CONTAINER_DIR php vendor/bin/phpunit --test-suffix Tests.php ./controllers
+  else
+    for file in "$@"; do
+      test_one "$file"
+    done
+  fi
+}
+
+function test_one() {
+  file="$1"
+  echo "====> $file"
+  docker-compose --profile test exec -w $CONTAINER_DIR -T php vendor/bin/phpunit --verbose "$file"
+  echo ""
+  echo ""
+}
+
+
+function exec() {
+  docker-compose exec php "$@"
+}
+
+function update() {
+  reset && git pull && start
+}
+
+function reset() {
+  wipe
+  docker-compose up --force-recreate --renew-anon-volumes --build --no-start
+}
+
+function launch() {
+  open "http://localhost:8008/$1"
+}
+
+function usage() {
+  name=$(basename $0)
+
+  echo "USAGE: $name COMMAND [ARGS...]"
+  echo ""
+  echo "Commands:"
+  echo "   start    Starts the VM"
+  echo "   stop     Stops the VM"
+  echo "   reset    Stops the VM, deletes all MySQL data, rebuilds and restarts the VM"
+  echo "   update   Similar to reset, but also pulls git"
+  echo "   test     Runs the specified test; runs all if none specified"
+  echo "   lint     Runs the linter"
+  echo "   wp       Runs the parameters as a WP-CLI script"
+  echo "   composer Runs the parameters as a PHP composer script"
+  echo "   backup   Backup the database as root"
+  echo "   usage    Prints this infromation"
+  echo "   *        Runs the parameters in the php container"
+  echo ""
+  echo "Note:"
+  echo "   Both 'test' and 'php' commands will translate paths from local to ππcontainer"
+  echo "   filesystems, so you can use tab completion via the 'web' symlink."
+}
+
+case $1 in
+"start")        start "${@}"       ;;
+"stop")         stop               ;;
+"reset")        reset              ;;
+"update")       update             ;;
+"test")         test "${@:2}"      ;;
+"lint")         lint               ;;
+"usage")        usage              ;;
+*)              exec "${@}"        ;;
+esac

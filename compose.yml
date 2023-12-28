@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  php:
+    build:
+      context: .
+      args:
+        PHP_VERSION: 8.2
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "8060:8080"
+    restart: always
+
+  pgvector:
+    image: ankane/pgvector
+    restart: always
+    environment:
+      POSTGRES_USER: docGPT
+      POSTGRES_PASSWORD: doc_gpt_password
+      POSTGRES_DB: docGPT
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ${PWD}/data/pgvector/pg_vector_init.sql:/docker-entrypoint-initdb.d/1.sql
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: always
+    profiles:
+      - debug
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@test.ca
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "80"
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+      - ${PWD}/data/pgadmin/servers.json:/pgadmin4/servers.json
+
+volumes:
+  pg_data:
+  pgadmin:
