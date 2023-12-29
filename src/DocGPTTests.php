@@ -26,12 +26,12 @@ class DocGPTTests extends TestCase
         $pgvectorClient = new VectorDB\PgvectorClient($pdo);
         $pgvectorClient->truncate();
 
-        $this->docGPT = new docGPT($openAiClient, $pgvectorClient);
+        $this->docGPT = new DocGPT($openAiClient, $pgvectorClient);
     }
 
     public function testSplitTextIntoBatches()
     {
-        $reflection = new ReflectionClass(docGPT::class);
+        $reflection = new ReflectionClass($this->docGPT);
         $method     = $reflection->getMethod('splitTextIntoBatches');
 
         $paragraphs = $this->faker->paragraphs(20);
