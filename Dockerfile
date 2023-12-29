@@ -3,17 +3,19 @@ ARG PHP_IMAGE=php:${PHP_VERSION}-cli
 
 FROM ${PHP_IMAGE}
 
-# Install PHP Extensions PDO, PDO_MYSQL, PDO_PGSQL
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-                       libpq-dev \
-                       wget \
-                       vim  \
-    && \
-    docker-php-ext-install \
-    pdo \
-    pdo_mysql \
-    pdo_pgsql
+RUN apt-get update && apt-get install -y \
+    git \
+    zip \
+    unzip \
+    libzip-dev
+
+# Install PHP Extensions
+RUN docker-php-ext-install bcmath \
+    && docker-php-ext-install zip
+
+# Install PDO, PDO_MYSQL, PDO_PGSQL
+RUN docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd \
+    && docker-php-ext-install pdo_mysql pdo pdo_pgsql
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
