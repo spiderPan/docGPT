@@ -1,6 +1,7 @@
 <?php
 
 namespace Pan\DocGpt\VectorDB;
+
 use PDO;
 use Pgvector\Vector;
 

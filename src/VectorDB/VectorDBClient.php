@@ -1,5 +1,7 @@
 <?php
+
 namespace Pan\DocGpt\VectorDB;
+
 interface VectorDBClient
 {
     function construct_vector($text): object;
