@@ -5,7 +5,7 @@ namespace Pan\DocGpt;
 use PDO;
 use PHPUnit\Framework\TestCase;
 
-class docGPTTests extends TestCase
+class DocGPTTests extends TestCase
 {
     private docGPT $docGPT;
 

@@ -21,13 +21,13 @@ class PgvectorClient implements VectorDBClient
         $statement = $this->db->prepare($query);
         $statement->bindValue(':namespace', $namespace);
         $statement->bindValue(':text', $text);
-        $statement->bindValue(':embedding', $this->construct_vector($embedding));
+        $statement->bindValue(':embedding', $this->constructVector($embedding));
         $statement->execute();
 
         return $statement->rowCount();
     }
 
-    public function is_namespace_exist(string $namespace): bool
+    public function isNamespaceExist(string $namespace): bool
     {
         $query     = 'SELECT * FROM items WHERE namespace = :namespace';
         $statement = $this->db->prepare($query);
@@ -41,7 +41,7 @@ class PgvectorClient implements VectorDBClient
     {
         $query       = 'SELECT * FROM items';
         $bind_values = [
-            ':embedding' => $this->construct_vector($embedding),
+            ':embedding' => $this->constructVector($embedding),
             ':limit'     => $limit,
         ];
 
@@ -80,7 +80,7 @@ class PgvectorClient implements VectorDBClient
         return $statement->execute();
     }
 
-    function construct_vector($text): object
+    function constructVector($text): object
     {
         return new Vector($text);
     }

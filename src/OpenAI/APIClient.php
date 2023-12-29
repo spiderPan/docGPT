@@ -19,10 +19,9 @@ class APIClient implements OpenAIClient
 
         if (empty($http_client)) {
             $http_client = new Client([
-                    'timeout'         => 90,
-                    'connect_timeout' => 90,
-                ]
-            );
+                'timeout'         => 90,
+                'connect_timeout' => 90,
+            ]);
         }
 
         $this->client = \OpenAI::factory()
@@ -59,7 +58,7 @@ class APIClient implements OpenAIClient
      */
     public function chat(array $messages, $model = 'gpt-3.5-turbo-16k'): array
     {
-        $roles = $this->list_pluck($messages, 'role');
+        $roles = $this->listPluck($messages, 'role');
 
         if (array_diff(array_unique($roles), ['system', 'user', 'assistant', 'function'])) {
             throw new \Exception('Invalid roles');
@@ -73,7 +72,7 @@ class APIClient implements OpenAIClient
         return $response->toArray();
     }
 
-    private function list_pluck($array, $field)
+    private function listPluck($array, $field)
     {
         return array_map(function ($item) use ($field) {
             return $item->$field;

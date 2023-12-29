@@ -33,11 +33,11 @@ class PgvectorClientTests extends TestCase
     {
         $namespace = $this->generateRandomNamespace();
         $embedding = $this->generateRandomEmbedding(1536);
-        $this->assertFalse($this->client->is_namespace_exist($namespace));
+        $this->assertFalse($this->client->isNamespaceExist($namespace));
 
         $this->client->insert($embedding, $namespace, 'test text');
 
-        $this->assertTrue($this->client->is_namespace_exist($namespace));
+        $this->assertTrue($this->client->isNamespaceExist($namespace));
     }
 
     public function testSearch(): void

@@ -30,10 +30,9 @@ function wipe() {
 }
 
 function lint() {
-  docker-compose run --rm composer install --dev
   docker-compose exec -w $CONTAINER_DIR php vendor/bin/phpcs \
     --ignore=./vendor/* \
-    --standard=PHPCompatibilityWP \
+    --standard=PSR1 \
     --severity=1 \
     --extensions=php \
     --runtime-set testVersion 8.2- \

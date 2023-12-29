@@ -5,7 +5,7 @@ namespace Pan\DocGpt;
 use Pan\DocGpt\OpenAI\OpenAIClient;
 use Pan\DocGpt\VectorDB\VectorDBClient;
 
-class docGPT
+class DocGPT
 {
     public OpenAIClient   $openai;
     public VectorDBClient $pgvector;
@@ -37,17 +37,17 @@ class docGPT
     }
 
 
-    public function set_logger(Logger $logger): void
+    public function setLogger(Logger $logger): void
     {
         $this->logger = $logger;
     }
 
-    public function add_history_context(string $context): void
+    public function addHistoryContext(string $context): void
     {
         $this->history_contexts[] = $context;
     }
 
-    public function reset_history_contexts(): void
+    public function resetHistoryContexts(): void
     {
         $this->history_contexts = [];
     }
@@ -58,7 +58,7 @@ class docGPT
     public function learn(string $text, ?string $namespace = null): bool
     {
         $namespace = $namespace ?? md5($text);
-        if ($this->pgvector->is_namespace_exist($namespace)) {
+        if ($this->pgvector->isNamespaceExist($namespace)) {
             return true;
         }
 
@@ -85,7 +85,7 @@ class docGPT
     /**
      * @throws \Exception
      */
-    public function get_contexts(string $text, array|string|null $namespace = null): array
+    public function getContexts(string $text, array|string|null $namespace = null): array
     {
         $result   = [];
         $response = $this->openai->embeddings($text);
@@ -155,7 +155,7 @@ class docGPT
         return $top_choice['message']['content'];
     }
 
-    private function split_text_into_batches($long_text, $max_batch_length = 500): array
+    private function splitTextIntoBatches($long_text, $max_batch_length = 500): array
     {
         // Remove leading and trailing whitespace characters from each paragraph
         $paragraphs = preg_split('/\n+/', trim($long_text));
