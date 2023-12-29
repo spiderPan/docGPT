@@ -178,7 +178,8 @@ class DocGPT
         // Add the last batch
         $batches[] = $current_batch;
 
-        return $batches;
+        // Remove empty batches
+        return array_filter($batches);
     }
 
 }
