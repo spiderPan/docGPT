@@ -91,7 +91,6 @@ class DocGPTTests extends TestCase
         ];
         $reflection                = new ReflectionClass($this->docGPT);
         $property                  = $reflection->getProperty('history_contexts');
-        $property->setAccessible(true); // Allow access to the private property
 
         $this->docGPT->resetHistoryContexts();
         // Get the value of the private property using reflection
