@@ -62,7 +62,7 @@ class DocGPT
             return true;
         }
 
-        $batches = $this->split_text_into_batches($text, self::LEARN_BATCH_SIZE);
+        $batches = $this->splitTextIntoBatches($text, self::LEARN_BATCH_SIZE);
 
         foreach ($batches as $batch) {
             $response = $this->openai->embeddings($batch);
