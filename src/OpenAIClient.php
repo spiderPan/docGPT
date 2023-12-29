@@ -1,13 +1,16 @@
 <?php
 
-namespace Pan\DocGpt\OpenAI;
+namespace Pan\DocGpt;
 
 use GuzzleHttp\Client;
 
-class OpenAI
+class OpenAIClient
 {
     private \OpenAI\Client $client;
 
+    /**
+     * @throws \Exception
+     */
     public function __construct($api_key, Client $http_client)
     {
         if (!class_exists('\OpenAI')) {
@@ -21,7 +24,7 @@ class OpenAI
     }
 
     // OpenAI API methods
-    public function embeddings(string $text, $model = 'text-embedding-ada-002', $force = false)
+    public function embeddings(string $text, $model = 'text-embedding-ada-002')
     {
         $response = $this->client->embeddings()->create([
             'model' => $model,
