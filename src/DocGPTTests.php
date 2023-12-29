@@ -31,11 +31,12 @@ class DocGPTTests extends TestCase
     {
         $reflection = new ReflectionClass(docGPT::class);
         $method     = $reflection->getMethod('splitTextIntoBatches');
-        $method->setAccessible(true);
 
-        $paragraphs  = $this->faker->paragraphs(10);
-        $batch_sizes = [10, 100, 1000];
-        // Test with different batch sizes
+        $paragraphs = $this->faker->paragraphs(20);
+
+        // Test with different batch sizes, including some that are smaller than the paragraphs
+        $batch_sizes = [10, 100, 1000, 10000];
+
         foreach ($batch_sizes as $batch_size) {
             $exceed_batch_size_paragraphs = [];
             foreach ($paragraphs as $paragraph) {
