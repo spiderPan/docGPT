@@ -30,7 +30,7 @@ function wipe() {
 }
 
 function lint() {
-  docker-compose exec -w $CONTAINER_DIR -T php vendor/bin/phpcs \
+  docker-compose exec -T php vendor/bin/phpcs \
     --ignore=./vendor/* \
     --standard=PSR1 \
     --severity=1 \
@@ -41,7 +41,7 @@ function lint() {
 
 function test() {
   if (($# == 0)); then
-    docker-compose exec -w $CONTAINER_DIR php vendor/bin/phpunit --test-suffix Tests.php ./src
+    docker-compose exec -T php vendor/bin/phpunit --test-suffix Tests.php ./src
   else
     for file in "$@"; do
       test_one "$file"
