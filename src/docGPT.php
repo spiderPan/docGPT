@@ -2,12 +2,8 @@
 
 namespace Pan\DocGpt;
 
-use GuzzleHttp\Client;
-use Pan\DocGpt\OpenAI\APIClient;
 use Pan\DocGpt\OpenAI\OpenAIClient;
-use Pan\DocGpt\VectorDB\PgvectorClient;
 use Pan\DocGpt\VectorDB\VectorDBClient;
-use PDO;
 
 class docGPT
 {
@@ -33,10 +29,11 @@ class docGPT
     /**
      * @throws \Exception
      */
-    public function __construct(string $openai_apikey, PDO $vectordb_pdo)
+    public function __construct(OpenAIClient $openai_client, VectorDBClient $pgvector_client, ?Logger $logger = null)
     {
-        $this->openai   = new APIClient($openai_apikey);
-        $this->pgvector = new PgvectorClient($vectordb_pdo);
+        $this->openai   = $openai_client;
+        $this->pgvector = $pgvector_client;
+        $this->logger   = $logger;
     }
 
 

@@ -15,6 +15,7 @@ class PgvectorClientTests extends TestCase
         // Assuming you have a test database setup
         $this->pdo    = new PDO('pgsql:host=pgvector;dbname=docGPT', 'docGPT', 'doc_gpt_password');
         $this->client = new PgvectorClient($this->pdo);
+        $this->client->truncate();
     }
 
     public function testInsert(): void
