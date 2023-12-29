@@ -2,6 +2,7 @@
 
 namespace Pan\DocGpt;
 
+use Exception;
 use Pan\DocGpt\OpenAI\OpenAIClient;
 use Pan\DocGpt\VectorDB\VectorDBClient;
 
@@ -12,7 +13,7 @@ class DocGPT
 
     private array $history_contexts = [];
 
-    private ?Logger $logger = null;
+    private ?Logger $logger;
 
 
     // These two constants are used to split the text into batches, so that we don't exceed the OpenAI API limits
@@ -27,7 +28,7 @@ class DocGPT
     private const CONTEXT_BATCH_LIMITS = 12;
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct(OpenAIClient $openai_client, VectorDBClient $pgvector_client, ?Logger $logger = null)
     {
@@ -53,7 +54,7 @@ class DocGPT
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function learn(string $text): bool
     {
@@ -68,13 +69,13 @@ class DocGPT
             $response = $this->openai->embeddings($batch);
 
             if (empty($response['data'][0]['embedding'])) {
-                throw new \Exception('Invalid response' . json_encode($response));
+                throw new Exception('Invalid response' . json_encode($response));
             }
 
             $embedding = $response['data'][0]['embedding'];
             $count     = $this->pgvector->insert(embedding: $embedding, namespace: $namespace, text: $batch);
             if ($count === 0) {
-                throw new \Exception('Failed to insert');
+                throw new Exception('Failed to insert');
             }
         }
 
@@ -83,7 +84,7 @@ class DocGPT
 
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function getContexts(string $text, array|string|null $namespace = null): array
     {
@@ -91,14 +92,14 @@ class DocGPT
         $response = $this->openai->embeddings($text);
 
         if (empty($response['data'][0]['embedding'])) {
-            throw new \Exception('Invalid response' . json_encode($response));
+            throw new Exception('Invalid response' . json_encode($response));
         }
 
         $embedding = $response['data'][0]['embedding'];
         $rows      = $this->pgvector->search(embedding: $embedding, namespace: $namespace, limit: self::CONTEXT_BATCH_LIMITS);
 
         if (empty($rows)) {
-            throw new \Exception('Failed to search');
+            throw new Exception('Failed to search');
         }
 
         foreach ($rows as $row) {
@@ -110,11 +111,11 @@ class DocGPT
 
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function chat(string $text, array|string|null $namespace = null): string
     {
-        $contexts = $this->get_contexts($text, $namespace);
+        $contexts = $this->getContexts($text, $namespace);
 
         if ($this->logger) {
             $this->logger->log('debug', "Context retrieved:");
@@ -139,17 +140,17 @@ class DocGPT
         $response = $this->openai->chat($messages);
 
         if (empty($response['choices'])) {
-            throw new \Exception('Invalid response' . json_encode($response));
+            throw new Exception('Invalid response' . json_encode($response));
         }
 
         $top_choice = array_shift($response['choices']);
 
         if ($top_choice['message']['role'] !== 'assistant') {
-            throw new \Exception('Invalid role in ' . json_encode($top_choice));
+            throw new Exception('Invalid role in ' . json_encode($top_choice));
         }
 
         if ($top_choice['finish_reason'] !== 'stop') {
-            throw new \Exception('Invalid finish_reason in the top choice:' . json_encode($top_choice));
+            throw new Exception('Invalid finish_reason in the top choice:' . json_encode($top_choice));
         }
 
         return $top_choice['message']['content'];

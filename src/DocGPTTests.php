@@ -2,18 +2,20 @@
 
 namespace Pan\DocGpt;
 
+use Exception;
 use Faker\Factory;
+use Faker\Generator;
 use PDO;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
 class DocGPTTests extends TestCase
 {
-    private docGPT           $docGPT;
-    private \Faker\Generator $faker;
+    private DocGPT           $docGPT;
+    private Generator $faker;
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     protected function setUp(): void
     {
@@ -65,11 +67,19 @@ class DocGPTTests extends TestCase
         }
     }
 
-    public function testLearn(): void
+    public function testLearnAndGetAsContext(): void
     {
-        $text = 'test text';
+        $text    = $this->faker->paragraphs(20, true);
+        $rawText = str_replace("\n", "", $text);
         $this->assertTrue($this->docGPT->learn($text));
-        //TODO: ensure the text has been split into batches and inserted into the database
+
+        $part     = substr($text, 0, 40);
+        $contexts = $this->docGPT->getContexts($part);
+        $this->assertNotEmpty($contexts);
+
+        foreach ($contexts as $context) {
+            $this->assertStringContainsString($context, $rawText);
+        }
     }
 
 
