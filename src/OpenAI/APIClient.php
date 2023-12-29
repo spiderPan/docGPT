@@ -1,20 +1,28 @@
 <?php
 
-namespace Pan\DocGpt;
+namespace Pan\DocGpt\OpenAI;
 
 use GuzzleHttp\Client;
 
-class OpenAIClient
+class APIClient implements OpenAIClient
 {
     private \OpenAI\Client $client;
 
     /**
      * @throws \Exception
      */
-    public function __construct($api_key, Client $http_client)
+    public function __construct($api_key, Client $http_client = null)
     {
         if (!class_exists('\OpenAI')) {
             throw new \Exception('OpenAI library is not installed');
+        }
+
+        if (empty($http_client)) {
+            $http_client = new Client([
+                    'timeout'         => 90,
+                    'connect_timeout' => 90,
+                ]
+            );
         }
 
         $this->client = \OpenAI::factory()
@@ -24,7 +32,7 @@ class OpenAIClient
     }
 
     // OpenAI API methods
-    public function embeddings(string $text, $model = 'text-embedding-ada-002')
+    public function embeddings(string $text, $model = 'text-embedding-ada-002'): array
     {
         $response = $this->client->embeddings()->create([
             'model' => $model,
@@ -49,7 +57,7 @@ class OpenAIClient
     /**
      * @throws \Exception
      */
-    public function chat(array $messages, $model = 'gpt-3.5-turbo-16k')
+    public function chat(array $messages, $model = 'gpt-3.5-turbo-16k'): array
     {
         $roles = $this->list_pluck($messages, 'role');
 

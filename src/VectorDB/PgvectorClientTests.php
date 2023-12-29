@@ -47,12 +47,12 @@ class PgvectorClientTests extends TestCase
         $namespace_2        = $this->generateRandomNamespace();
         $count              = 20;
         // Construct the data to be inserted,
-        // - each embedding is different from the previous one by 2, therefore the distance between the embeddings is known and sortable
+        // - each embedding is different from the previous one by square of the index, therefore the distance between the embeddings is known and sortable
         // - the namespace is alternating between two namespaces, starting with namespace_1
         // - the text is just a string with an index
         for ($i = 0; $i < $count; $i++) {
             $embedding    = $starting_embedding;
-            $embedding[0] = $embedding[0] + $i * 2;
+            $embedding[0] = $embedding[0] + $i * $i;
             $namespace    = $i % 2 === 0 ? $namespace_1 : $namespace_2;
 
             $this->client->insert($embedding, $namespace, 'test text' . $i);
