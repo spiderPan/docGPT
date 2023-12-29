@@ -15,7 +15,7 @@ jobs:
         run: docker compose up -d
 
       - name: debug
-        run: ls ./vendor/bin
+        run: ls -la ./
 #      - name: Run the lint
 #        run: ./dev lint
 
