@@ -11,7 +11,7 @@ use ReflectionClass;
 
 class DocGPTTests extends TestCase
 {
-    private DocGPT           $docGPT;
+    private DocGPT    $docGPT;
     private Generator $faker;
 
     /**
@@ -82,5 +82,61 @@ class DocGPTTests extends TestCase
         }
     }
 
+    public function testItCanAddHistoryContext(): void
+    {
+        $expected_history_contexts = [
+            'I am a highly intelligent question answering bot.',
+            'I answer questions in the English language.',
+            'I was trained by the good folks at OpenAI.',
+        ];
+        $reflection                = new ReflectionClass($this->docGPT);
+        $property                  = $reflection->getProperty('history_contexts');
+        $property->setAccessible(true); // Allow access to the private property
 
+        $this->docGPT->resetHistoryContexts();
+        // Get the value of the private property using reflection
+        $this->assertEmpty($property->getValue($this->docGPT));
+
+        foreach ($expected_history_contexts as $expected_history_context) {
+            $this->docGPT->addHistoryContext($expected_history_context);
+        }
+
+        $this->assertEquals($expected_history_contexts, $property->getValue($this->docGPT));
+    }
+
+    public function testItCanChat(): void
+    {
+        $text = $this->faker->paragraphs(2000, true);
+        $this->assertTrue($this->docGPT->learn($text));
+        $history_contexts = [
+            'I am a highly intelligent question answering bot.',
+            'I answer questions in the English language.',
+            'I was trained by the good folks at OpenAI.',
+        ];
+
+        $this->docGPT->resetHistoryContexts();
+        foreach ($history_contexts as $history_context) {
+            $this->docGPT->addHistoryContext($history_context);
+        }
+
+        $request_message   = 'How are you?';
+        $expected_response = [];
+        // The mock will return the request message as the response message in JSON format
+        $response_message = $this->docGPT->chat($request_message);
+        $this->assertNotEmpty($response_message);
+
+        // The response should contain the contexts and history_context as the system message
+        $contexts = $this->docGPT->getContexts($request_message);
+        $this->assertNotEmpty($contexts);
+
+        $contexts = array_merge($contexts, $history_contexts);
+        foreach ($contexts as $context) {
+            $expected_response[] = ['content' => $context, 'role' => 'system'];
+        }
+
+        // The response should contain the request message as the user message
+        $expected_response[] = ['content' => $request_message, 'role' => 'user'];
+
+        $this->assertJsonStringEqualsJsonString(json_encode($expected_response), $response_message);
+    }
 }
