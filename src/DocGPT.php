@@ -55,9 +55,9 @@ class DocGPT
     /**
      * @throws \Exception
      */
-    public function learn(string $text, ?string $namespace = null): bool
+    public function learn(string $text): bool
     {
-        $namespace = $namespace ?? md5($text);
+        $namespace = md5($text);
         if ($this->pgvector->isNamespaceExist($namespace)) {
             return true;
         }

@@ -11,16 +11,22 @@ class MockClientTests extends TestCase
     protected function setUp(): void
     {
         $this->mockClient = new MockClient();
+        $this->faker      = \Faker\Factory::create();
     }
 
     public function testEmbeddings()
     {
-        $result = $this->mockClient->embeddings('test');
+        $text = $this->faker->text();
+
+        $result = $this->mockClient->embeddings($text);
         $this->assertIsArray($result);
         $this->assertArrayHasKey('data', $result);
         $this->assertArrayHasKey('object', $result);
         $this->assertArrayHasKey('model', $result);
         $this->assertArrayHasKey('usage', $result);
+
+        $result2 = $this->mockClient->embeddings($text);
+        $this->assertEquals($result, $result2);
     }
 
     public function testChat()

@@ -16,6 +16,8 @@ class MockClient implements OpenAIClient
     // OpenAI API methods
     public function embeddings(string $text, $model = 'text-embedding-ada-002'): array
     {
+        $seed = crc32($text);
+        $this->faker->seed($seed);
         $tokens = $this->faker->numberBetween(0, 100);
 
         return [
@@ -73,7 +75,7 @@ class MockClient implements OpenAIClient
     {
         $embedding = [];
         for ($i = 0; $i < $size; $i++) {
-            $embedding[] = mt_rand() / mt_getrandmax(); // Generates a random float between 0 and 1
+            $embedding[] = $this->faker->randomFloat(); // Generates a random float between 0 and 1
         }
 
         return $embedding;

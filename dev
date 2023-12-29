@@ -52,7 +52,7 @@ function test() {
 function test_one() {
   file="$1"
   echo "====> $file"
-  docker-compose --profile test exec -w $CONTAINER_DIR -T php vendor/bin/phpunit --verbose "$file"
+  docker-compose --profile test exec -w $CONTAINER_DIR -T php vendor/bin/phpunit "$file"
   echo ""
   echo ""
 }
