@@ -14,6 +14,8 @@ jobs:
       - name: Start the containers
         run: docker compose up -d
 
+      - name: debug
+        run: ls ./vendor/bin
 #      - name: Run the lint
 #        run: ./dev lint
 
