@@ -14,9 +14,8 @@ jobs:
       - name: Start the containers
         run: docker compose up -d
 
-      ## TODO: fix the linting and add it back
-      #      - name: Run the lint
-      #        run: ./dev lint
+      - name: Run the lint
+        run: ./dev lint
 
       - name: Run the tests
         run: ./dev test

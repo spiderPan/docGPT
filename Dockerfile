@@ -7,15 +7,15 @@ RUN apt-get update && apt-get install -y \
     git \
     zip \
     unzip \
-    libzip-dev
+    libzip-dev \
+    libpq-dev
 
 # Install PHP Extensions
 RUN docker-php-ext-install bcmath \
     && docker-php-ext-install zip
 
 # Install PDO, PDO_MYSQL, PDO_PGSQL
-RUN docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd \
-    && docker-php-ext-install pdo_mysql pdo pdo_pgsql
+RUN docker-php-ext-install pdo pdo_pgsql
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
