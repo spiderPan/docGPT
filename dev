@@ -30,7 +30,7 @@ function wipe() {
 }
 
 function lint() {
-  docker-compose exec -w $CONTAINER_DIR php vendor/bin/phpcs \
+  docker-compose exec -w $CONTAINER_DIR -T php vendor/bin/phpcs \
     --ignore=./vendor/* \
     --standard=PSR1 \
     --severity=1 \
@@ -56,7 +56,6 @@ function test_one() {
   echo ""
   echo ""
 }
-
 
 function exec() {
   docker-compose exec php "$@"
@@ -99,12 +98,12 @@ function usage() {
 }
 
 case $1 in
-"start")        start "${@}"       ;;
-"stop")         stop               ;;
-"reset")        reset              ;;
-"update")       update             ;;
-"test")         test "${@:2}"      ;;
-"lint")         lint               ;;
-"usage")        usage              ;;
-*)              exec "${@}"        ;;
+"start") start "${@}" ;;
+"stop") stop ;;
+"reset") reset ;;
+"update") update ;;
+"test") test "${@:2}" ;;
+"lint") lint ;;
+"usage") usage ;;
+*) exec "${@}" ;;
 esac
