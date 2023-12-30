@@ -1,8 +1,8 @@
 <?php
 
-namespace Pan\DocGptTests\Logger;
+namespace Pan\DocGpt\Logger;
 
-use Pan\DocGpt\Logger\FileLogger;
+use Exception;
 use PHPUnit\Framework\TestCase;
 
 class FileLoggerTests extends TestCase
