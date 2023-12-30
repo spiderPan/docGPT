@@ -58,7 +58,9 @@ class APIClient implements OpenAIClient
      */
     public function chat(array $messages, $model = 'gpt-3.5-turbo-16k'): array
     {
-        $roles = $this->listPluck($messages, 'role');
+        $roles = array_map(function ($item) {
+            return $item->role;
+        }, $messages);
 
         if (array_diff(array_unique($roles), ['system', 'user', 'assistant', 'function'])) {
             throw new \Exception('Invalid roles');
@@ -70,12 +72,5 @@ class APIClient implements OpenAIClient
         ]);
 
         return $response->toArray();
-    }
-
-    private function listPluck($array, $field)
-    {
-        return array_map(function ($item) use ($field) {
-            return $item->$field;
-        }, $array);
     }
 }
