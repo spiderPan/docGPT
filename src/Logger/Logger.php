@@ -1,6 +1,6 @@
 <?php
 
-namespace Pan\DocGpt;
+namespace Pan\DocGpt\Logger;
 
 interface Logger
 {

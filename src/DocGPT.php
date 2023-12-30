@@ -3,6 +3,7 @@
 namespace Pan\DocGpt;
 
 use Exception;
+use Pan\DocGpt\Logger\Logger;
 use Pan\DocGpt\OpenAI\OpenAIClient;
 use Pan\DocGpt\VectorDB\VectorDBClient;
 
