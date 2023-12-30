@@ -2,7 +2,6 @@
 
 namespace Pan\DocGpt;
 
-use Exception;
 use Pan\DocGpt\Logger\Logger;
 use Pan\DocGpt\Logger\SystemLogger;
 use Pan\DocGpt\OpenAI\OpenAIClient;

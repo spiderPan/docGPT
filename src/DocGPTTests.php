@@ -14,9 +14,6 @@ class DocGPTTests extends TestCase
     private DocGPT    $docGPT;
     private Generator $faker;
 
-    /**
-     * @throws Exception
-     */
     protected function setUp(): void
     {
         $this->faker  = Factory::create();

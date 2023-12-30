@@ -41,7 +41,6 @@ class MockClient implements OpenAIClient
     /**
      * This chat method will mock the structure of the OpenAI chat API response
      * BUT return the actual $messages from the request.
-     * @throws \Exception
      */
     public function chat(array $messages, $model = 'gpt-3.5-turbo-16k'): array
     {
