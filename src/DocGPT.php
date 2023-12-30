@@ -4,17 +4,19 @@ namespace Pan\DocGpt;
 
 use Exception;
 use Pan\DocGpt\Logger\Logger;
+use Pan\DocGpt\Loggers\SystemLogger;
 use Pan\DocGpt\OpenAI\OpenAIClient;
 use Pan\DocGpt\VectorDB\VectorDBClient;
 
 class DocGPT
 {
-    public OpenAIClient   $openai;
+    public OpenAIClient $openai;
+
     public VectorDBClient $pgvector;
 
     private array $history_contexts = [];
 
-    private ?Logger $logger;
+    private Logger $logger;
 
 
     // These two constants are used to split the text into batches, so that we don't exceed the OpenAI API limits
@@ -28,16 +30,12 @@ class DocGPT
     private const LEARN_BATCH_SIZE     = 3000; # characters
     private const CONTEXT_BATCH_LIMITS = 12;
 
-    /**
-     * @throws Exception
-     */
-    public function __construct(OpenAIClient $openai_client, VectorDBClient $pgvector_client, ?Logger $logger = null)
+    public function __construct(OpenAIClient $openai_client, VectorDBClient $pgvector_client)
     {
         $this->openai   = $openai_client;
         $this->pgvector = $pgvector_client;
-        $this->logger   = $logger;
+        $this->logger   = new SystemLogger();
     }
-
 
     public function setLogger(Logger $logger): void
     {
@@ -54,9 +52,6 @@ class DocGPT
         $this->history_contexts = [];
     }
 
-    /**
-     * @throws Exception
-     */
     public function learn(string $text): bool
     {
         $namespace = md5($text);
@@ -70,37 +65,41 @@ class DocGPT
             $response = $this->openai->embeddings($batch);
 
             if (empty($response['data'][0]['embedding'])) {
-                throw new Exception('Invalid response' . json_encode($response));
+                $this->logger->log('error', 'Invalid response' . json_encode($response));
+
+                return false;
             }
 
             $embedding = $response['data'][0]['embedding'];
             $count     = $this->pgvector->insert(embedding: $embedding, namespace: $namespace, text: $batch);
             if ($count === 0) {
-                throw new Exception('Failed to insert');
+                $this->logger->log('error', 'Failed to insert');
+
+                return false;
             }
         }
 
         return true;
     }
 
-
-    /**
-     * @throws Exception
-     */
     public function getContexts(string $text, array|string|null $namespace = null): array
     {
         $result   = [];
         $response = $this->openai->embeddings($text);
 
         if (empty($response['data'][0]['embedding'])) {
-            throw new Exception('Invalid response' . json_encode($response));
+            $this->logger->log('error', 'Invalid response' . json_encode($response));
+
+            return [];
         }
 
         $embedding = $response['data'][0]['embedding'];
         $rows      = $this->pgvector->search(embedding: $embedding, namespace: $namespace, limit: self::CONTEXT_BATCH_LIMITS);
 
         if (empty($rows)) {
-            throw new Exception('Failed to search');
+            $this->logger->log('error', 'Failed to search');
+
+            return [];
         }
 
         foreach ($rows as $row) {
@@ -111,23 +110,19 @@ class DocGPT
     }
 
 
-    /**
-     * @throws Exception
-     */
     public function chat(string $text, array|string|null $namespace = null): string
     {
         $contexts = $this->getContexts($text, $namespace);
 
-        if ($this->logger) {
-            $this->logger->log('debug', "Context retrieved:");
-            $this->logger->log('debug', $contexts);
+        $this->logger->log('debug', "Context retrieved:");
+        $this->logger->log('debug', $contexts);
 
-            $this->logger->log('debug', 'History context:');
-            $this->logger->log('debug', $this->history_contexts);
+        $this->logger->log('debug', 'History context:');
+        $this->logger->log('debug', $this->history_contexts);
 
-            $this->logger->log('debug', 'Namespace found:');
-            $this->logger->log('debug', $namespace);
-        }
+        $this->logger->log('debug', 'Namespace found:');
+        $this->logger->log('debug', $namespace);
+
         $messages = [];
 
         $contexts = array_merge($contexts, $this->history_contexts);
@@ -141,17 +136,23 @@ class DocGPT
         $response = $this->openai->chat($messages);
 
         if (empty($response['choices'])) {
-            throw new Exception('Invalid response' . json_encode($response));
+            $this->logger->log('error', 'Invalid response' . json_encode($response));
+
+            return '';
         }
 
         $top_choice = array_shift($response['choices']);
 
         if ($top_choice['message']['role'] !== 'assistant') {
-            throw new Exception('Invalid role in ' . json_encode($top_choice));
+            $this->logger->log('error', 'Invalid role in ' . json_encode($top_choice));
+
+            return '';
         }
 
         if ($top_choice['finish_reason'] !== 'stop') {
-            throw new Exception('Invalid finish_reason in the top choice:' . json_encode($top_choice));
+            $this->logger->log('error', 'Invalid finish_reason in the top choice:' . json_encode($top_choice));
+
+            return '';
         }
 
         return $top_choice['message']['content'];
