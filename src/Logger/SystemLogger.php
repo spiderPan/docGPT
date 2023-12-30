@@ -1,8 +1,6 @@
 <?php
 
-namespace Pan\DocGpt\Loggers;
-
-use Pan\DocGpt\Logger\Logger;
+namespace Pan\DocGpt\Logger;
 
 class SystemLogger implements Logger
 {

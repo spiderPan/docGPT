@@ -4,7 +4,7 @@ namespace Pan\DocGpt;
 
 use Exception;
 use Pan\DocGpt\Logger\Logger;
-use Pan\DocGpt\Loggers\SystemLogger;
+use Pan\DocGpt\Logger\SystemLogger;
 use Pan\DocGpt\OpenAI\OpenAIClient;
 use Pan\DocGpt\VectorDB\VectorDBClient;
 
@@ -121,7 +121,7 @@ class DocGPT
         $this->logger->log('debug', $this->history_contexts);
 
         $this->logger->log('debug', 'Namespace found:');
-        $this->logger->log('debug', $namespace);
+        $this->logger->log('debug', $namespace ?: '');
 
         $messages = [];
 
