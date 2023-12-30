@@ -24,9 +24,6 @@ class FileLogger implements Logger
         $this->log_file_path = $log_folder_path . '/' . date('Y-m-d-H-i-s') . '.log';
     }
 
-    /**
-     * @throws Exception
-     */
     public function log($type, $message): void
     {
         $log_entry = [
@@ -38,9 +35,6 @@ class FileLogger implements Logger
         $this->writeLogToFile($log_entry);
     }
 
-    /**
-     * @throws Exception
-     */
     protected function writeLogToFile($log_entry): void
     {
         $log_entries   = $this->getLogEntries();
@@ -52,7 +46,6 @@ class FileLogger implements Logger
     /**
      * The Filter is an array of key-value pairs.
      * - When filter by type, it will return all log entries with the type equal or less than the given type.
-     * @throws Exception
      */
     public function getLogEntries($filter = []): array
     {
@@ -73,7 +66,7 @@ class FileLogger implements Logger
                 $selected_index = array_search($filter['type'], $this->log_types);
 
                 if ($selected_index === false) {
-                    throw new \Exception('Invalid log type');
+                    return [];
                 }
 
                 $filter['type'] = array_slice($this->log_types, 0, $selected_index + 1);
