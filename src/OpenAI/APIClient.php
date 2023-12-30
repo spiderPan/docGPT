@@ -59,7 +59,7 @@ class APIClient implements OpenAIClient
     public function chat(array $messages, $model = 'gpt-3.5-turbo-16k'): array
     {
         $roles = array_map(function ($item) {
-            return $item->role;
+            return $item['role'] ?? '';
         }, $messages);
 
         if (array_diff(array_unique($roles), ['system', 'user', 'assistant', 'function'])) {
