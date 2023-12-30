@@ -6,7 +6,7 @@ use Exception;
 
 class FileLogger implements Logger
 {
-    private string $log_file_path;
+    protected string $log_file_path;
 
     protected array $log_types = ['fatal', 'error', 'warning', 'info', 'debug', 'trace', 'all'];
 
