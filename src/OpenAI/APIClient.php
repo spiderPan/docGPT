@@ -8,15 +8,8 @@ class APIClient implements OpenAIClient
 {
     private \OpenAI\Client $client;
 
-    /**
-     * @throws \Exception
-     */
     public function __construct($api_key, Client $http_client = null)
     {
-        if (!class_exists('\OpenAI')) {
-            throw new \Exception('OpenAI library is not installed');
-        }
-
         if (empty($http_client)) {
             $http_client = new Client([
                 'timeout'         => 90,
