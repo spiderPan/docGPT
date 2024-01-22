@@ -2,7 +2,6 @@
 
 namespace Pan\DocGpt;
 
-use Exception;
 use Faker\Factory;
 use Faker\Generator;
 use PDO;
