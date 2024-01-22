@@ -80,7 +80,7 @@ class PgvectorClient implements VectorDBClient
         return $statement->execute();
     }
 
-    function constructVector($text): object
+    public function constructVector($text): object
     {
         return new Vector($text);
     }

@@ -30,6 +30,12 @@ function wipe() {
 }
 
 function lint() {
+  docker-compose exec -T php vendor/bin/php-cs-fixer fix \
+    --rules=@PSR2,no_unused_imports \
+    --using-cache=no \
+    .
+
+
   docker-compose exec -T php vendor/bin/phpcs \
     --ignore=./vendor/* \
     --standard=PSR1 \

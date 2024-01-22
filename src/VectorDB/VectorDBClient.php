@@ -4,11 +4,11 @@ namespace Pan\DocGpt\VectorDB;
 
 interface VectorDBClient
 {
-    function constructVector($text): object;
+    public function constructVector($text): object;
 
-    function insert(array $embedding, string $namespace = '', string $text = ''): int;
+    public function insert(array $embedding, string $namespace = '', string $text = ''): int;
 
-    function isNamespaceExist(string $namespace): bool;
+    public function isNamespaceExist(string $namespace): bool;
 
-    function search(array $embedding, array|string|null $namespace = null, int $limit = 10): array;
+    public function search(array $embedding, array|string|null $namespace = null, int $limit = 10): array;
 }
