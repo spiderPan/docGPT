@@ -7,6 +7,7 @@ use PHPUnit\Framework\TestCase;
 class MockClientTests extends TestCase
 {
     private MockClient $mockClient;
+    private \Faker\Generator $faker;
 
     protected function setUp(): void
     {
