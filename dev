@@ -41,7 +41,7 @@ function lint() {
 
 function test() {
   if (($# == 0)); then
-    docker-compose exec -T php vendor/bin/phpunit --test-suffix Tests.php ./src
+    docker-compose exec -T php vendor/bin/phpunit --display-deprecations --test-suffix Tests.php ./src
   else
     for file in "$@"; do
       test_one "$file"
