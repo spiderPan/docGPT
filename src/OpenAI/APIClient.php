@@ -24,7 +24,7 @@ class APIClient implements OpenAIClient
     }
 
     // OpenAI API methods
-    public function embeddings(string $text, $model = 'text-embedding-ada-002'): array
+    public function embeddings(string $text, $model = 'text-embedding-3-large'): array
     {
         $response = $this->client->embeddings()->create([
             'model' => $model,
@@ -49,7 +49,7 @@ class APIClient implements OpenAIClient
     /**
      * @throws \Exception
      */
-    public function chat(array $messages, $model = 'gpt-3.5-turbo-16k'): array
+    public function chat(array $messages, $model = 'gpt-3.5-turbo-1106'): array
     {
         $roles = array_map(function ($item) {
             return $item['role'] ?? '';

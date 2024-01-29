@@ -23,7 +23,7 @@ class MockClient implements OpenAIClient
         return [
             'data'   => [
                 [
-                    'embedding' => $this->generateRandomEmbedding(1536),
+                    'embedding' => $this->generateRandomEmbedding(3072),
                     'index'     => 0,
                     'object'    => 'embedding'
                 ]
