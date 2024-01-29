@@ -20,7 +20,7 @@ class PgvectorClientTests extends TestCase
 
     public function testInsert(): void
     {
-        $embedding = $this->generateRandomEmbedding(1536);
+        $embedding = $this->generateRandomEmbedding(3072);
         $namespace = $this->generateRandomNamespace();
         $text      = 'test text';
 
@@ -32,7 +32,7 @@ class PgvectorClientTests extends TestCase
     public function testIsNamespaceExist(): void
     {
         $namespace = $this->generateRandomNamespace();
-        $embedding = $this->generateRandomEmbedding(1536);
+        $embedding = $this->generateRandomEmbedding(3072);
         $this->assertFalse($this->client->isNamespaceExist($namespace));
 
         $this->client->insert($embedding, $namespace, 'test text');
@@ -43,7 +43,7 @@ class PgvectorClientTests extends TestCase
     public function testSearch(): void
     {
         $data               = [];
-        $starting_embedding = $this->generateRandomEmbedding(1536);
+        $starting_embedding = $this->generateRandomEmbedding(3072);
         $namespace_1        = $this->generateRandomNamespace();
         $namespace_2        = $this->generateRandomNamespace();
         $count              = 20;
