@@ -181,8 +181,6 @@ class DocGPT
                     $this->logger->log('info', "🚀 Step $step / $total_steps processed successfully!");
                     break;
                 }
-
-                sleep(1);
             }
 
             if (!$is_step_success) {

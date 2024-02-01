@@ -107,6 +107,7 @@ class DocGPTTests extends TestCase
         $this->docGPT->setLogger($logger);
         $steps = new Steps();
 
+
         // Add 2 steps that valid
         $steps->addStep(new Step('Step 1 Prompt'));
         $steps->addStep(new Step('Step 2 Prompt'));
@@ -120,12 +121,19 @@ class DocGPTTests extends TestCase
         // The mock will return the request message as the response message in JSON format
         $responses = $this->docGPT->multiStepsChat($steps);
         $this->assertCount(2, $responses);
-        // The steps' history context should contain the previous response
-        $this->assertCount(2, $steps->getHistoryContexts());
 
         // Validate the response with two steps
         $this->assertResponse('Step 1 Prompt', $responses[0]);
         $this->assertResponse('Step 2 Prompt', $responses[1], [$responses[0]]);
+
+        // Ensure the history context set with two responses
+        $history_context = $steps->getHistoryContexts();
+        $this->assertCount(2, $history_context);
+        $this->assertEquals($responses, $history_context);
+
+        // Test it can reset the history context
+        $steps->resetHistoryContexts();
+        $this->assertEmpty($steps->getHistoryContexts());
 
         // Two of steps would cause error
         $error_entries = $logger->getLogEntries(['type' => 'error']);
