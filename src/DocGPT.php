@@ -4,6 +4,8 @@ namespace Pan\DocGpt;
 
 use Pan\DocGpt\Logger\Logger;
 use Pan\DocGpt\Logger\SystemLogger;
+use Pan\DocGpt\Model\Step;
+use Pan\DocGpt\Model\Steps;
 use Pan\DocGpt\OpenAI\OpenAIClient;
 use Pan\DocGpt\VectorDB\VectorDBClient;
 
@@ -12,8 +14,6 @@ class DocGPT
     public OpenAIClient $openai;
 
     public VectorDBClient $pgvector;
-
-    private array $history_contexts = [];
 
     private Logger $logger;
 
@@ -39,16 +39,6 @@ class DocGPT
     public function setLogger(Logger $logger): void
     {
         $this->logger = $logger;
-    }
-
-    public function addHistoryContext(string $context): void
-    {
-        $this->history_contexts[] = $context;
-    }
-
-    public function resetHistoryContexts(): void
-    {
-        $this->history_contexts = [];
     }
 
     public function learn(string $text): bool
@@ -109,7 +99,7 @@ class DocGPT
     }
 
 
-    public function chat(string $text, array|string|null $namespace = null): string
+    public function chat(string $text, array|string|null $namespace = null, array $history_context = []): string
     {
         $contexts = $this->getContexts($text, $namespace);
 
@@ -117,14 +107,14 @@ class DocGPT
         $this->logger->log('debug', $contexts);
 
         $this->logger->log('debug', 'History context:');
-        $this->logger->log('debug', $this->history_contexts);
+        $this->logger->log('debug', $history_context);
 
         $this->logger->log('debug', 'Namespace found:');
         $this->logger->log('debug', $namespace ?: '');
 
         $messages = [];
 
-        $contexts = array_merge($contexts, $this->history_contexts);
+        $contexts = array_merge($contexts, $history_context);
 
         foreach ($contexts as $context) {
             $messages[] = ['role' => 'system', 'content' => $context];
@@ -155,6 +145,50 @@ class DocGPT
         }
 
         return $top_choice['message']['content'];
+    }
+
+    public function multiStepsChat(Steps $sequential_steps, array|string|null $namespace = null): array
+    {
+        $this->logger->log('debug', 'Starting Multiple Steps Chat');
+        $total_steps  = $sequential_steps->count();
+        $step_results = [];
+
+        foreach ($sequential_steps as $i => $sequential_step) {
+            $is_step_success = false;
+            $step            = $i + 1;
+            /**
+             * @var Step $sequential_step
+             */
+            $prompt_text = $sequential_step->getPrompt();
+
+            $this->logger->log('debug', 'Prompt constructed:');
+            $this->logger->log('debug', $prompt_text);
+
+            $max_attempts = 3; // Maximum number of attempts
+            $attempts     = 0;
+            while ($attempts < $max_attempts) {
+                $attempts++;
+                $response = $this->chat($prompt_text, $namespace, $sequential_steps->getHistoryContexts());
+                $this->logger->log('debug', "[$attempts/$max_attempts] Attempts -- Response from OpenAI received:");
+                $this->logger->log('debug', $response);
+
+                // Check if the content is unexpected
+                if (!$sequential_step->isValidResponse($response)) {
+                    // Content is as expected, proceed with further processing
+                    $is_step_success = true;
+                    $sequential_steps->addHistoryContext($response);
+                    $step_results[] = $response;
+                    $this->logger->log('info', "🚀 Step $step / $total_steps processed successfully!");
+                    break;
+                }
+            }
+
+            if (!$is_step_success) {
+                $this->logger->log('error', "💥 Step $step / $total_steps failed!");
+            }
+        }
+
+        return $step_results;
     }
 
     private function splitTextIntoBatches($long_text, $max_batch_length = 500): array
