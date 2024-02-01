@@ -24,7 +24,8 @@ class Steps implements \IteratorAggregate
         return $this->steps;
     }
 
-    public function count(): int{
+    public function count(): int
+    {
         return count($this->steps);
     }
 
