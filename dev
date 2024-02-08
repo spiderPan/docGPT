@@ -14,9 +14,9 @@ function start() {
     for profile in "$@"; do
       profiles+="--profile $profile "
     done
-    docker-compose $profiles up
+    docker-compose $profiles watch
   else
-    docker-compose up
+    docker-compose watch
   fi
 }
 
