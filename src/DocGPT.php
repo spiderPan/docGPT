@@ -168,9 +168,9 @@ class DocGPT
             $attempts     = 0;
             while ($attempts < $max_attempts) {
                 if ($sequential_steps->checkStopCondition()) {
-                    $is_step_success = true;
                     $this->logger->log('info', '🛑️ Stop condition met, exiting loop');
-                    break;
+                    // This was set to stop, break out both loop
+                    break 2;
                 }
                 $attempts++;
 
