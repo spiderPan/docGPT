@@ -5,6 +5,7 @@ namespace Pan\DocGpt;
 use Faker\Factory;
 use Faker\Generator;
 use Pan\DocGpt\Logger\FileLogger;
+use Pan\DocGpt\Logger\Logger;
 use Pan\DocGpt\Model\Step;
 use Pan\DocGpt\Model\Steps;
 use PDO;
@@ -16,6 +17,8 @@ class DocGPTTests extends TestCase
     private DocGPT    $docGPT;
     private Generator $faker;
 
+    private Logger $logger;
+
     protected function setUp(): void
     {
         $this->faker  = Factory::create();
@@ -26,6 +29,15 @@ class DocGPTTests extends TestCase
         $pgvectorClient->truncate();
 
         $this->docGPT = new DocGPT($openAiClient, $pgvectorClient);
+
+        // Set up a filelogger
+        $this->logger = new FileLogger(sys_get_temp_dir() . '/logs');
+        $this->docGPT->setLogger($this->logger);
+    }
+
+    protected function reset(): void
+    {
+        array_map('unlink', glob(sys_get_temp_dir() . '/logs/*.log'));
     }
 
     public function testSplitTextIntoBatches()
@@ -102,11 +114,7 @@ class DocGPTTests extends TestCase
         $text = $this->faker->paragraphs(200, true);
         $this->assertTrue($this->docGPT->learn($text));
 
-        // Set up logger
-        $logger = new FileLogger(sys_get_temp_dir() . '/logs');
-        $this->docGPT->setLogger($logger);
         $steps = new Steps();
-
 
         // Add 2 steps that valid
         $steps->addStep(new Step('Step 1 Prompt'));
@@ -136,8 +144,67 @@ class DocGPTTests extends TestCase
         $this->assertEmpty($steps->getHistoryContexts());
 
         // Two of steps would cause error
-        $error_entries = $logger->getLogEntries(['type' => 'error']);
+        $error_entries = $this->logger->getLogEntries(['type' => 'error']);
         $this->assertCount(2, $error_entries);
+    }
+
+    public function testItCanMultipleStepChatWithStopCondition()
+    {
+        // Ensure learned
+        $text = $this->faker->paragraphs(200, true);
+        $this->assertTrue($this->docGPT->learn($text));
+
+        // Set up logger
+        $steps = new Steps();
+
+        // Let's set a conditional stop at step 3
+        $count = 0;
+        $steps->setStopCondition(function () use (&$count) {
+            $count++;
+            if ($count > 3) {
+                return true;
+            }
+
+            return false;
+        });
+
+
+        // Add 4 steps that valid
+        $steps->addStep(new Step('Step 1 Prompt'));
+        $steps->addStep(new Step('Step 2 Prompt'));
+        $steps->addStep(new Step('Step 3 Prompt'));
+        $steps->addStep(new Step('Step 4 Prompt'));
+
+        $this->assertCount(4, $steps->getSteps());
+
+
+        // The mock will return the request message as the response message in JSON format
+        $responses = $this->docGPT->multiStepsChat($steps);
+        $this->assertCount(3, $responses);
+
+        // Validate the response with two steps
+        $this->assertResponse('Step 1 Prompt', $responses[0]);
+        $this->assertResponse('Step 2 Prompt', $responses[1], [$responses[0]]);
+
+        // Ensure the history context set with two responses
+        $history_context = $steps->getHistoryContexts();
+        $this->assertCount(3, $history_context);
+        $this->assertEquals($responses, $history_context);
+
+        // Test it can reset the history context
+        $steps->resetHistoryContexts();
+        $this->assertEmpty($steps->getHistoryContexts());
+
+        // No error
+        $error_entries = $this->logger->getLogEntries(['type' => 'error']);
+        $this->assertCount(0, $error_entries);
+
+        // Test it has the condition met message in info
+        $info_entries = $this->logger->getLogEntries(['type' => 'info']);
+        $this->assertNotEmpty($info_entries);
+
+        $conditional_met_info = array_pop($info_entries);
+        $this->assertEquals('🛑️ Stop condition met, exiting loop', $conditional_met_info['content']);
     }
 
     private function assertResponse($request_message, $actual_response, $extra_context = []): void
