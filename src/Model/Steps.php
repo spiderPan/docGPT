@@ -2,12 +2,35 @@
 
 namespace Pan\DocGpt\Model;
 
+use Exception;
+
 class Steps implements \IteratorAggregate
 {
     private array $history_contexts = [];
 
     private array $steps = [];
 
+    protected $stop_condition = null;
+
+
+    public function setStopCondition(callable $stop_condition): void
+    {
+        $this->stop_condition = $stop_condition;
+    }
+
+    public function checkStopCondition(): bool
+    {
+        if (empty($this->stop_condition)) {
+            return false;
+        }
+
+        if (is_callable($this->stop_condition)) {
+            // Call the condition callback function
+            return call_user_func($this->stop_condition);
+        }
+
+        return false;
+    }
 
     public function addStep(Step $step): void
     {

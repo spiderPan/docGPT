@@ -167,7 +167,13 @@ class DocGPT
             $max_attempts = 3; // Maximum number of attempts
             $attempts     = 0;
             while ($attempts < $max_attempts) {
+                if ($sequential_steps->checkStopCondition()) {
+                    $is_step_success = true;
+                    $this->logger->log('info', '🛑️ Stop condition met, exiting loop');
+                    break;
+                }
                 $attempts++;
+
                 $response = $this->chat($prompt_text, $namespace, $sequential_steps->getHistoryContexts());
                 $this->logger->log('debug', "[$attempts/$max_attempts] Attempts -- Response from OpenAI received:");
                 $this->logger->log('debug', $response);
