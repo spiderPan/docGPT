@@ -35,7 +35,7 @@ class DocGPTTests extends TestCase
         $this->docGPT->setLogger($this->logger);
     }
 
-    protected function reset(): void
+    protected function tearDown(): void
     {
         array_map('unlink', glob(sys_get_temp_dir() . '/logs/*.log'));
     }
