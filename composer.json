@@ -1,5 +1,5 @@
 {
-    "name": "pan/doc-gpt",
+    "name": "spiderpan/doc-gpt",
     "description": "PHP library that for document GPT",
     "type": "library",
     "require": {
