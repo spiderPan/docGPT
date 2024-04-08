@@ -2,6 +2,7 @@
     "name": "spiderpan/doc-gpt",
     "description": "PHP library that for document GPT",
     "type": "library",
+    "license": "MIT",
     "require": {
         "openai-php/client": "^0.8.1",
         "symfony/http-client": "^7.0",
