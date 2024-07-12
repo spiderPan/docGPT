@@ -38,7 +38,9 @@ $docGpt->learn(file_get_contents('test.txt'));
 $steps = new Steps();
 $steps->addStep(new Step('Prompt for step 1'));
 $steps->addStep(new Step('Prompt for step 2, but will use the previous response as new context'));
-$steps->addStep(new Step('Prompt for step 3', ['validate the response', 'exclude the keywords']));
+// Specify a list of keywords to exclude from the response, if the response contains any of these keywords, it will be considered invalid.
+// System will re-try 3 times to get a valid response otherwise it will log the error.
+$steps->addStep(new Step('Prompt for step 3', ['exclude_the_keywords','exclude_the_keywords2']));
 
 // Chat with the document using the steps
 $responses = $docGpt->multiStepsChat($steps, 'test');
