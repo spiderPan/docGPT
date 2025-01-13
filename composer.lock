@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8af18bc836e05ca20a9d861df5db914c",
+    "content-hash": "26019afbd8f0e6c28c85f64ece9026e7",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -503,24 +503,24 @@
         },
         {
             "name": "pgvector/pgvector",
-            "version": "v0.1.4",
+            "version": "v0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pgvector/pgvector-php.git",
-                "reference": "301ce729091b496b477c28f548bcba285d59d86d"
+                "reference": "d209ac1003686b5e142b1025476023553fdb41f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pgvector/pgvector-php/zipball/301ce729091b496b477c28f548bcba285d59d86d",
-                "reference": "301ce729091b496b477c28f548bcba285d59d86d",
+                "url": "https://api.github.com/repos/pgvector/pgvector-php/zipball/d209ac1003686b5e142b1025476023553fdb41f1",
+                "reference": "d209ac1003686b5e142b1025476023553fdb41f1",
                 "shasum": ""
             },
             "require": {
-                "php": ">= 7.4"
+                "php": ">= 8.1"
             },
             "require-dev": {
-                "illuminate/database": ">= 9.0",
-                "phpunit/phpunit": "^9"
+                "illuminate/database": ">= 10",
+                "phpunit/phpunit": "^10"
             },
             "type": "library",
             "extra": {
@@ -551,7 +551,7 @@
                 "issues": "https://github.com/pgvector/pgvector-php/issues",
                 "source": "https://github.com/pgvector/pgvector-php"
             },
-            "time": "2023-11-15T02:20:37+00:00"
+            "time": "2024-06-26T06:17:24+00:00"
         },
         {
             "name": "php-http/discovery",
