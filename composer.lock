@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1297eb7c3405b14b99e5dec5dd8871fb",
+    "content-hash": "0f2b69e51ddb5162d876a54ae5cc1fbc",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -502,24 +502,25 @@
         },
         {
             "name": "pgvector/pgvector",
-            "version": "v0.1.4",
+            "version": "v0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pgvector/pgvector-php.git",
-                "reference": "301ce729091b496b477c28f548bcba285d59d86d"
+                "reference": "d61e74c96350ca09014837b49a30f329e09d92cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pgvector/pgvector-php/zipball/301ce729091b496b477c28f548bcba285d59d86d",
-                "reference": "301ce729091b496b477c28f548bcba285d59d86d",
+                "url": "https://api.github.com/repos/pgvector/pgvector-php/zipball/d61e74c96350ca09014837b49a30f329e09d92cf",
+                "reference": "d61e74c96350ca09014837b49a30f329e09d92cf",
                 "shasum": ""
             },
             "require": {
-                "php": ">= 7.4"
+                "php": ">= 8.1"
             },
             "require-dev": {
-                "illuminate/database": ">= 9.0",
-                "phpunit/phpunit": "^9"
+                "illuminate/database": ">= 10",
+                "laravel/serializable-closure": "^1.3",
+                "phpunit/phpunit": "^10"
             },
             "type": "library",
             "extra": {
@@ -550,7 +551,7 @@
                 "issues": "https://github.com/pgvector/pgvector-php/issues",
                 "source": "https://github.com/pgvector/pgvector-php"
             },
-            "time": "2023-11-15T02:20:37+00:00"
+            "time": "2025-02-01T19:59:40+00:00"
         },
         {
             "name": "php-http/discovery",
