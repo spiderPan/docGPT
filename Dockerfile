@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 ARG PHP_VERSION=8.2
 ARG PHP_IMAGE=php:${PHP_VERSION}-cli
 
@@ -22,7 +24,12 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 # Install Composer Dependencies
 WORKDIR /var/www/html
-COPY composer.json composer.lock ./
-RUN composer install
+
+RUN --mount=type=bind,source=composer.json,target=composer.json \
+    --mount=type=bind,source=composer.lock,target=composer.lock \
+    --mount=type=cache,target=/var/composer \
+    composer install
+COPY . .
+
 
 CMD [ "bash" ]

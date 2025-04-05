@@ -4,14 +4,24 @@ services:
       context: .
       args:
         PHP_VERSION: 8.2
-    volumes:
-      - ./:/var/www/html
-      - /var/www/html/vendor
     ports:
       - "8060:8080"
     restart: always
     working_dir: /var/www/html
     command: bash -c "composer install && php -S 0.0.0.0:8080"
+    develop:
+      watch:
+        - path: composer.json
+          action: rebuild
+        - path: Dockerfile
+          action: rebuild
+        - path: ./
+          target: /var/www/html/
+          action: sync
+          ignore:
+            - vendor/
+            - data/
+            - .github/
     depends_on:
       pgvector: { condition: service_healthy }
 
